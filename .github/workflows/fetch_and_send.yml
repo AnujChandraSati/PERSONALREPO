@@ -1,0 +1,25 @@
+name: Reddit Media Bot
+
+on:
+  repository_dispatch:
+    types: [new-reddit-post]
+
+jobs:
+  fetch-and-send:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install "RedDownloader==4.4.0" requests
+
+      - name: Download post media and deliver to Telegram
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          POST_URL: ${{ github.event.client_payload.url }}
+          MESSAGE_ID: ${{ github.event.client_payload.message_id }}
+        run: python fetch_and_send.py
