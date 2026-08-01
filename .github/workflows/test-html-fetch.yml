@@ -1,0 +1,23 @@
+name: Test HTML Fetch
+
+on:
+  workflow_dispatch:
+    inputs:
+      reddit_post_url:
+        description: "Reddit post URL to test"
+        required: true
+        type: string
+
+jobs:
+  test-fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install requests
+      - env:
+          REDDIT_POST_URL: ${{ inputs.reddit_post_url }}
+        run: python test_html_fetch.py
